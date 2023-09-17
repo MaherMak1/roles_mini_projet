@@ -1,0 +1,28 @@
+---
+- name: Install docker  and webapp on a Centos 7 machine
+  hosts: "{{env}}"  #indiquer en commande ad-hoc : staging ou prod
+  become: yes
+  pre_tasks:
+    - name: Install pre-requisite packages
+      yum:
+        name: "{{item}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - '*'
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+        - python3
+        - epel-release
+        - python-pip
+        - '*'
+
+    - name: Install docker python
+      pip:
+        name: docker-py
+        executable: /usr/bin/pip3
+  
+  roles:
+    - mini_pr_role
+        

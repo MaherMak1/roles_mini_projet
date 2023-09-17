@@ -1,0 +1,8 @@
+#Machines
+
+[staging]
+sentosSt      ansible_connection=ssh  ansible_user=maher
+
+[prod]
+sentos      ansible_connection=ssh  ansible_user=maher  
+

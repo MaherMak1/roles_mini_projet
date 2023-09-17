@@ -1,0 +1,4 @@
+---
+# vars file for mini_pr_role
+#ansible_user: maher
+ansible_python_interpreter: /usr/bin/python3

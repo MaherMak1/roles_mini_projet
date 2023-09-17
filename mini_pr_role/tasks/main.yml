@@ -1,0 +1,62 @@
+---
+# tasks file for mini_pr_role
+# docker tasks
+- name: Add Docker CE repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Install Docker
+  yum: 
+    name: docker 
+    state: latest
+
+- name: Start and enable the Docker daemon
+  service: 
+    name: docker 
+    state: started 
+    enabled: yes
+
+- name: Add remote user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: dockerroot
+    append: yes
+
+#webapp tasks
+
+- name: "Clean Folder"
+  file:
+    path: "/home/{{ ansible_user }}/webapp"
+    state: absent
+
+- name: Create webapp directory
+  file:
+    path: "/home/{{ ansible_user }}/webapp/"
+    state: directory
+
+- name: "Install git"
+  yum:
+    name: git
+    state: present
+    update_cache: yes
+
+- name: "git clone to host folder"
+  git:
+    repo: https://github.com/diranetafen/static-website-example.git
+    dest: /home/{{ ansible_user }}/webapp/
+
+#- name: Generate html
+  #template:
+    #src: templates/index.html.j2
+    #dest: "/home/{{ ansible_user }}/webapp/index.html"
+
+- name: "Launching an HTTPD docker Container"
+  docker_container:
+    name: apache-server
+    image: httpd:2.4.32
+    state: started
+    ports:
+      - "8000:80"
+    volumes:
+      - "/home/{{ ansible_user }}/webapp/:/usr/local/apache2/htdocs/"
